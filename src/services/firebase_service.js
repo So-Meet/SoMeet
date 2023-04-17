@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore } from 'firebase/firestore/lite';
+import { collection, getDocs, getFirestore, addDoc, doc, runTransaction } from 'firebase/firestore/lite';
 
 class FirebaseService {
     constructor() {
@@ -62,6 +62,43 @@ class FirebaseService {
         }));
 
         return meetingList;
+    }
+
+    /**
+     * @typedef {Object} Publisher
+     * @property {string} Email
+     * @property {string} Name
+     * 
+     * @typedef {Object} MeetingInfo
+     * @property {string} Title
+     * @property {string} time
+     * @property {string} type
+     * @property {string} tag
+     * @property {string} place
+     * @property {string} content
+     * @property {string} link
+     * 
+     * @typedef {Object} Meeting
+     * @property {Publisher} Publisher
+     * @property {MeetingInfo} MeetingInfo
+     */
+
+    /**
+     * @summary meeting POST
+     * @param {Meeting} meeting 
+     */
+    async createMeeting(meeting) {
+        try {
+            await runTransaction(this.db, async (transaction) => { 
+                // meetings id를 위한 meetingRef 생성
+                const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
+                // 해당 meetings 에 private/meetingInfo 와 publisher 추가
+                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), meeting['publisher']);
+                transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meeting['meetingInfo']);
+            });
+        } catch (e) {
+            console.log("Transaction failed: ", e);
+        }
     }
 }
 

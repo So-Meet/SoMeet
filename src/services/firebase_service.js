@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, where, query } from 'firebase/firestore/lite';
+import { collection, getDocs, getFirestore } from 'firebase/firestore/lite';
 
 class FirebaseService {
     constructor() {
@@ -17,7 +17,29 @@ class FirebaseService {
         this.db = getFirestore(this.app);
     }
 
-    // 모든 meeting GET
+    /**
+     * @typedef {Object} MeetingInfo
+     * @property {string} link
+     * @property {string} time
+     * @property {string} tag
+     * @property {string} place
+     * @property {string} title
+     * @property {string} type
+     * 
+     * @typedef {Object} Publisher
+     * @property {string} email
+     * @property {string} name
+     * 
+     * @typedef {Object} Meeting
+     * @property {Array<Participant>} Participants
+     * @property {MeetingInfo} MeetingInfo
+     * @property {Publisher} Publisher
+     */
+
+    /**
+     * @summary 모든 meeting GET
+     * @returns {Array<Meeting>} MeetingList
+     */
     async getMeetings() {
         // collection -> doc -> collection 구조라 doc id를 받아온 뒤 다시 collection 에서 fetching 해야함
         const meetingsCol = collection(this.db, 'meetings');
@@ -30,7 +52,7 @@ class FirebaseService {
             
             // private는 항상 1개라고 가정
             const privateSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'private'));
-            meeting['private'] = privateSnapshot.docs.map(d => d.data())[0];
+            meeting['meetingInfo'] = privateSnapshot.docs.map(d => d.data())[0];
 
             // publisher는 항상 1개라고 가정
             const publisherSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'publisher'));

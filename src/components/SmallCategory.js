@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './css/SmallCategory.module.css';
+import styles from '../css/components/SmallCategory.module.css';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 

@@ -12,7 +12,7 @@ const App = () => {
 	return (
 		<div className='App'>
 			<BrowserRouter>
-				<Container style={{marginTop: 50}}>
+				<Container style={{marginTop: 10}}>
 
           <Header />	
 

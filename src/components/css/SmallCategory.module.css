@@ -1,0 +1,20 @@
+.btn_group {
+    display: block;
+    margin-top: 15px;
+}
+
+.btn_small {
+    width: 60px;
+    height: 25px;
+    font-size: 12px !important;
+    margin: 10px 20px 10px 0;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+    background-color: #C6D8F3 !important;
+    color: black !important;
+}
+
+.btn_small:hover {
+    background-color: #a4c5f6 !important;
+}

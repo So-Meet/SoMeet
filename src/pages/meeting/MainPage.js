@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import CardInfo from '../../components/Card';
+import CardInfo from '../../components/CardInfo';
 import styles from '../../css/pages/MainPage.module.css';
 import CardGroup from 'react-bootstrap/CardGroup';
 

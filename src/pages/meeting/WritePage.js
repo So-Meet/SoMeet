@@ -62,11 +62,11 @@ const WritePage = () => {
             </div>
             <div class="form-group">
               <div class="col-30">
-                <input type="datetime-local" id="time" name="date" class="form-control" onChange={handleChange} required/>
+                <input type ="text" id="place-input" name = "place" class="form-control" placeholder="장소를 입력하세요" onChange={handleChange} required/>
               </div>
             </div>
             <div class="form-group">
-              <input type ="text" id="place-input" name = "place" class="form-control" placeholder="장소를 입력하세요" onChange={handleChange} required/>
+              <input type="datetime-local" id="time" name="date" class="form-control" onChange={handleChange} required/>
             </div>    
           </div>
           <div class="form-group">

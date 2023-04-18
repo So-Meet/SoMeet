@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import styles from '../css/components/CardInfo.module.css';
 
-const CardInfo = () => {
+const CardInfo = (props) => {
   const movePage = useNavigate();
 
   function toDetailPage() {

@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 const SmallCategory = ({ prop }) => {
-    if (prop == 1) return (
+    if (prop === 1) return (
       <ButtonGroup className={styles.btn_group}>
         <Button className={styles.btn_small}>한식</Button>
         <Button className={styles.btn_small}>중식</Button>

@@ -21,6 +21,8 @@ const MainPage = () => {
           <CardInfo />
         </CardGroup>
       </Container>
+            <Link to={'/write'}>작성페이지로 이동</Link>
+   
     </>
 
 

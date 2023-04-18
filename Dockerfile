@@ -8,7 +8,9 @@ COPY package.json /app/package.json
 
 RUN npm install
 RUN npm install react-router-dom
+RUN npm install bootstrap
+
+COPY ./ ./
 
 EXPOSE 3000
 CMD ["npm", "start"]
-

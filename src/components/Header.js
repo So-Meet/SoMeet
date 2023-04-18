@@ -31,7 +31,7 @@ const Header = () => {
     <>
       <Navbar>
         <Container>
-          <Navbar.Brand href="/main">So Meat</Navbar.Brand>
+          <Navbar.Brand href="/main">So Meet</Navbar.Brand>
           <Navbar.Brand className={styles.logout} href="/login">로그아웃</Navbar.Brand>
         </Container>
       </Navbar>

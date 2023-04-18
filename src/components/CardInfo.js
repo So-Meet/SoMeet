@@ -6,6 +6,16 @@ import styles from '../css/components/CardInfo.module.css';
 
 const CardInfo = (props) => {
   const movePage = useNavigate();
+  const meetingInfo = props.meetingInfo;
+  const publisher = props.publisher;
+  const participants = props.participants;
+
+  function toDateTime(secs) {
+    var t = new Date(1970, 0, 1); // Epoch
+    t.setFullYear(1);
+    t.setSeconds(secs);
+    return t;
+  }
 
   function toDetailPage() {
     movePage('/detail');
@@ -15,23 +25,23 @@ const CardInfo = (props) => {
     <>
       <Card onClick={toDetailPage} className={styles.card}>
         <Card.Body>
-          <Card.Title className={styles.card_title}>밥먹자!</Card.Title>
+          <Card.Title className={styles.card_title}>{meetingInfo.title}</Card.Title>
           <Card.Text className={styles.badges}>
             <Badge bg="primary">
-              식사
+              {meetingInfo.type}
             </Badge>{' '}
             <Badge bg="primary">
-              한식
+              {meetingInfo.tag}
             </Badge>{' '}
           </Card.Text>
           <Card.Text>
-            2023/04/17 19:30
+            {toDateTime(meetingInfo.time).toLocaleString()}
           </Card.Text>
           <Card.Text>
-            참가 인원 수 5명
+            참가 인원 수 {participants.length}명
           </Card.Text>
           <Card.Text className={styles.publisher}>
-            정진우
+            {publisher.name}
           </Card.Text>
         </Card.Body>
       </Card>

@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, addDoc, doc, runTransaction } from 'firebase/firestore/lite';
+import { collection, getDocs, getFirestore, doc, deleteDoc } from 'firebase/firestore/lite';
 
 class FirebaseService {
     constructor() {
@@ -64,6 +64,13 @@ class FirebaseService {
         return meetingList;
     }
 
+    /**
+     * @summary meeting DELETE
+     * @param {string} docId 
+     */
+    async deleteMeeting(docId) {
+        await deleteDoc(doc(this.db, "meetings", docId));
+    }
     /**
      * @typedef {Object} Publisher
      * @property {string} Email

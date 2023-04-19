@@ -54,6 +54,53 @@ class FirebaseService {
 
         return user;
     }
+
+    /**
+     * @summary logout 기능
+     */
+    async logout() {
+        signOut(this.auth).then(() => {
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
+    /**
+     * @typedef {Object} user
+     * @property {string} accessToken
+     * @property {string} displayedName
+     * @property {string} email
+     * @property {string} uid
+     * 
+     */
+
+    /**
+     * @summary login 기능
+     * @param {string} email 
+     * @param {string} password
+     * @returns {UserImpl} user
+     */
+    async login(email, password) {
+        const user = signInWithEmailAndPassword(this.auth, email, password)
+        .then((userCredential) => {
+            const user = {
+                "accessToken": userCredential.user['accessToken'],
+                "displayedName": userCredential.user['displayedName'],
+                "email": userCredential.user['email'],
+                "uid": userCredential.user['uid']
+            };
+
+            return user;
+        }).catch((error) => {
+            // 여기는 어떻게 처리해야할지 고민...
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+
+        return user;
+    }
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} link

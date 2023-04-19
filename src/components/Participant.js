@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import { Container } from 'react-bootstrap';
-import FirebaseService from '../services/firebase_service';
+// import FirebaseService from '../services/firebase_service';
 import styles from '../css/components/Participant.module.css';
 
 import Card from 'react-bootstrap/Card';
@@ -18,7 +18,7 @@ for(let i = 0;i<5;i++){
 
 const Participant = () => {
 
-    const db = new FirebaseService();
+    // const db = new FirebaseService();
     
     return (
         // <Card style={{ width: '18rem' }}>

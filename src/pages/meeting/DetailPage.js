@@ -3,7 +3,6 @@ import React from 'react';
 import styles from '../../css/pages/DetailPage.module.css';
 import Card from 'react-bootstrap/Card';
 import Participant from '../../components/Participant';
-<<<<<<< HEAD
 import Badge from 'react-bootstrap/Badge';
 import { Link } from 'react-router-dom';
 
@@ -48,15 +47,6 @@ const DetailPage = (props) => {
 
   </div>
   )
-=======
-import  '../../css/pages/DetailPage.css';
-const DetailPage = (props) => {
-    return (
-           <div>
-            <h3>미팅 상세보기 </h3>
-            <Participant/>
-        </div>
-    )
->>>>>>> 4a802ce8d84874487f1592422004c5cb31b15687
+
 }
 export default DetailPage;  

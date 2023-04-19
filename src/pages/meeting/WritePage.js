@@ -4,7 +4,7 @@ import { Cascader } from 'antd';
 import "../../css/pages/WritePage.css"
 const WritePage = () => {
 
-    const [memo, setMemo] = useState({
+    const [info, setInfo] = useState({
         content: '',
         link: '',
         place: '',
@@ -15,23 +15,24 @@ const WritePage = () => {
       });
       const handleCascaderChange = (value) => {
         const [type, tag] = value; // Cascader에서 입력된 값을 배열로 받음
-        setMemo(prevMemo => ({
-          ...prevMemo,
+        setInfo(prevInfo => ({
+          ...prevInfo,
           type: type,
           tag: tag
         }));
       }   
       const handleChange = (e) => {
         const { name, value } = e.target;
-        setMemo(prevMemo => ({
-          ...prevMemo,
+        setInfo(prevInfo => ({
+          ...prevInfo,
           [name]: value
         }));
       }
     
       const handleSubmit = (e) => {
         e.preventDefault();
-        // memo 데이터를 서버로 전송?
+        console.log(info);
+        // Info 데이터를 서버로 전송?
       }
       const options = [
         {

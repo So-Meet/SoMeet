@@ -102,6 +102,13 @@ class FirebaseService {
     }
 
     /**
+     * @summary meeting DELETE
+     * @param {string} docId 
+     */
+    async deleteMeeting(docId) {
+        await deleteDoc(doc(this.db, "meetings", docId));
+    }
+    /**
      * @typedef {Object} Publisher
      * @property {string} Email
      * @property {string} Name

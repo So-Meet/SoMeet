@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, doc, deleteDoc } from 'firebase/firestore/lite';
+import { collection, getDocs, getFirestore } from 'firebase/firestore/lite';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 class FirebaseService {
     constructor() {
@@ -15,8 +16,44 @@ class FirebaseService {
 
         this.app = initializeApp(this.firebaseConfig);
         this.db = getFirestore(this.app);
+        this.auth = getAuth(this.app);
     }
 
+    /**
+     * @typedef {Object} user
+     * @property {string} accessToken
+     * @property {string} displayedName
+     * @property {string} email
+     * @property {string} uid
+     * 
+     */
+
+    /**
+     * @summary login 기능
+     * @param {string} email 
+     * @param {string} password
+     * @returns {UserImpl} user
+     */
+    async login(email, password) {
+        const user = signInWithEmailAndPassword(this.auth, email, password)
+        .then((userCredential) => {
+            const user = {
+                "accessToken": userCredential.user['accessToken'],
+                "displayedName": userCredential.user['displayedName'],
+                "email": userCredential.user['email'],
+                "uid": userCredential.user['uid']
+            };
+
+            return user;
+        }).catch((error) => {
+            // 여기는 어떻게 처리해야할지 고민...
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+
+        return user;
+    }
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} link

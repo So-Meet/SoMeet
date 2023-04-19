@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, where, query } from 'firebase/firestore/lite';
+import { collection, getDocs, getFirestore } from 'firebase/firestore/lite';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 class FirebaseService {
     constructor() {
@@ -15,9 +16,114 @@ class FirebaseService {
 
         this.app = initializeApp(this.firebaseConfig);
         this.db = getFirestore(this.app);
+        this.auth = getAuth(this.app);
     }
 
-    // 모든 meeting GET
+    /**
+     * @typedef {Object} user
+     * @property {string} accessToken
+     * @property {string} displayedName
+     * @property {string} email
+     * @property {string} uid
+     * 
+     */
+
+    /**
+     * @summary login 기능
+     * @param {string} email 
+     * @param {string} password
+     * @returns {UserImpl} user
+     */
+    async login(email, password) {
+        const user = signInWithEmailAndPassword(this.auth, email, password)
+        .then((userCredential) => {
+            const user = {
+                "accessToken": userCredential.user['accessToken'],
+                "displayedName": userCredential.user['displayedName'],
+                "email": userCredential.user['email'],
+                "uid": userCredential.user['uid']
+            };
+
+            return user;
+        }).catch((error) => {
+            // 여기는 어떻게 처리해야할지 고민...
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+
+        return user;
+    }
+
+    /**
+     * @summary logout 기능
+     */
+    async logout() {
+        signOut(this.auth).then(() => {
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
+    /**
+     * @typedef {Object} user
+     * @property {string} accessToken
+     * @property {string} displayedName
+     * @property {string} email
+     * @property {string} uid
+     * 
+     */
+
+    /**
+     * @summary login 기능
+     * @param {string} email 
+     * @param {string} password
+     * @returns {UserImpl} user
+     */
+    async login(email, password) {
+        const user = signInWithEmailAndPassword(this.auth, email, password)
+        .then((userCredential) => {
+            const user = {
+                "accessToken": userCredential.user['accessToken'],
+                "displayedName": userCredential.user['displayedName'],
+                "email": userCredential.user['email'],
+                "uid": userCredential.user['uid']
+            };
+
+            return user;
+        }).catch((error) => {
+            // 여기는 어떻게 처리해야할지 고민...
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+
+        return user;
+    }
+    /**
+     * @typedef {Object} MeetingInfo
+     * @property {string} link
+     * @property {string} time
+     * @property {string} tag
+     * @property {string} place
+     * @property {string} title
+     * @property {string} type
+     * 
+     * @typedef {Object} Publisher
+     * @property {string} email
+     * @property {string} name
+     * 
+     * @typedef {Object} Meeting
+     * @property {Array<Participant>} Participants
+     * @property {MeetingInfo} MeetingInfo
+     * @property {Publisher} Publisher
+     */
+
+    /**
+     * @summary 모든 meeting GET
+     * @returns {Array<Meeting>} MeetingList
+     */
     async getMeetings() {
         // collection -> doc -> collection 구조라 doc id를 받아온 뒤 다시 collection 에서 fetching 해야함
         const meetingsCol = collection(this.db, 'meetings');
@@ -30,7 +136,7 @@ class FirebaseService {
             
             // private는 항상 1개라고 가정
             const privateSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'private'));
-            meeting['private'] = privateSnapshot.docs.map(d => d.data())[0];
+            meeting['meetingInfo'] = privateSnapshot.docs.map(d => d.data())[0];
 
             // publisher는 항상 1개라고 가정
             const publisherSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'publisher'));
@@ -40,6 +146,50 @@ class FirebaseService {
         }));
 
         return meetingList;
+    }
+
+    /**
+     * @summary meeting DELETE
+     * @param {string} docId 
+     */
+    async deleteMeeting(docId) {
+        await deleteDoc(doc(this.db, "meetings", docId));
+    }
+    /**
+     * @typedef {Object} Publisher
+     * @property {string} Email
+     * @property {string} Name
+     * 
+     * @typedef {Object} MeetingInfo
+     * @property {string} Title
+     * @property {string} time
+     * @property {string} type
+     * @property {string} tag
+     * @property {string} place
+     * @property {string} content
+     * @property {string} link
+     * 
+     * @typedef {Object} Meeting
+     * @property {Publisher} Publisher
+     * @property {MeetingInfo} MeetingInfo
+     */
+
+    /**
+     * @summary meeting POST
+     * @param {Meeting} meeting 
+     */
+    async createMeeting(meeting) {
+        try {
+            await runTransaction(this.db, async (transaction) => { 
+                // meetings id를 위한 meetingRef 생성
+                const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
+                // 해당 meetings 에 private/meetingInfo 와 publisher 추가
+                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), meeting['publisher']);
+                transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meeting['meetingInfo']);
+            });
+        } catch (e) {
+            console.log("Transaction failed: ", e);
+        }
     }
 }
 

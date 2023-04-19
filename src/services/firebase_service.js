@@ -16,6 +16,7 @@ class FirebaseService {
 
         this.app = initializeApp(this.firebaseConfig);
         this.db = getFirestore(this.app);
+        this.auth = getAuth(this.app);
     }
 
     /**
@@ -34,8 +35,7 @@ class FirebaseService {
      * @returns {UserImpl} user
      */
     async login(email, password) {
-        const auth = getAuth(this.app);
-        const user = signInWithEmailAndPassword(auth, email, password)
+        const user = signInWithEmailAndPassword(this.auth, email, password)
         .then((userCredential) => {
             const user = {
                 "accessToken": userCredential.user['accessToken'],
@@ -59,8 +59,7 @@ class FirebaseService {
      * @summary logout 기능
      */
     async logout() {
-        const auth = getAuth(this.app);
-        signOut(auth).then(() => {
+        signOut(this.auth).then(() => {
 
         }).catch((error) => {
             console.log(error);

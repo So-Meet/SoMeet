@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, getDoc } from 'firebase/firestore/lite';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { collection, getDocs, getFirestore, getDoc, deleteDoc, runTransaction, doc, addDoc } from 'firebase/firestore/lite';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
 class FirebaseService {
     constructor() {
@@ -46,7 +46,7 @@ class FirebaseService {
 
             return user;
         }).catch((error) => {
-            // 여기는 어떻게 처리해야할지 고민...
+            // TODO: 여기는 어떻게 처리해야할지 고민...
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
@@ -74,33 +74,6 @@ class FirebaseService {
      * @property {string} uid
      * 
      */
-
-    /**
-     * @summary login 기능
-     * @param {string} email 
-     * @param {string} password
-     * @returns {UserImpl} user
-     */
-    async login(email, password) {
-        const user = signInWithEmailAndPassword(this.auth, email, password)
-        .then((userCredential) => {
-            const user = {
-                "accessToken": userCredential.user['accessToken'],
-                "displayedName": userCredential.user['displayedName'],
-                "email": userCredential.user['email'],
-                "uid": userCredential.user['uid']
-            };
-
-            return user;
-        }).catch((error) => {
-            // 여기는 어떻게 처리해야할지 고민...
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-        });
-
-        return user;
-    }
 
     /**
      * @typedef {Object} MeetingInfo
@@ -156,13 +129,7 @@ class FirebaseService {
     async deleteMeeting(docId) {
         await deleteDoc(doc(this.db, "meetings", docId));
     }
-    /**
-     * @summary meeting DELETE
-     * @param {string} docId 
-     */
-    async deleteMeeting(docId) {
-        await deleteDoc(doc(this.db, "meetings", docId));
-    }
+
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} Title

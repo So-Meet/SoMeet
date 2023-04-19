@@ -4,28 +4,30 @@ import { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import styles from '../css/components/Header.module.css';
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 
 
-const Header = () => {
+const Header = (props) => {
   const [category, setCategory] = useState({
-    flag: 1
+    flag: -1,
   })
+  
 
-  function swithcToFoodCategory() {
-    setCategory({
-      ...category,
-      flag: 1
-    });
-  }
-
-  function swithcToPlayCategory() {
-    setCategory({
-      ...category,
-      flag: 0
-    });
-  }
+  const handleChange = (val) => {
+    props.propFunction(val,-1);
+    if(val === "식사") {
+      setCategory({
+        ...category,
+        flag: 1
+      });
+    } else {
+      setCategory({
+        ...category,
+        flag: 0
+      });
+    }
+  };
 
     return (
     <>
@@ -37,11 +39,11 @@ const Header = () => {
       </Navbar>
 
       <Container className={styles.header}>
-        <ButtonGroup className={styles.btn_group}>
-          <Button onClick={swithcToFoodCategory} className={styles.btn_large} variant="primary">식사</Button>
-          <Button onClick={swithcToPlayCategory} className={styles.btn_large} variant="primary">여가</Button>
-        </ButtonGroup>
-        <SmallCategory prop={category.flag}></SmallCategory>
+        <ToggleButtonGroup type="radio" name="type" className={styles.btn_group} onChange={handleChange} >
+          <ToggleButton id="1" value="식사" className={styles.btn_large} variant="primary">식사</ToggleButton>
+          <ToggleButton id="2" value="여가" className={styles.btn_large} variant="primary">여가</ToggleButton>
+        </ToggleButtonGroup>
+        <SmallCategory propFunction={props.propFunction} flag={category.flag} category={props.category} />
       </Container>
     </>
     );

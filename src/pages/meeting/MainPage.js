@@ -4,12 +4,11 @@ import CardInfo from '../../components/CardInfo';
 import styles from '../../css/pages/MainPage.module.css';
 import FirebaseService from '../../services/firebase_service';
 
-const MainPage = () => {
+const MainPage = (prop) => {
   const [cards, setCards] = useState([]);
 
-  const firebase = new FirebaseService();
-
   useEffect(() => {
+    const firebase = new FirebaseService();
     firebase.getMeetings().then((values) => {
       setCards(values);
     });
@@ -19,7 +18,8 @@ const MainPage = () => {
     <>
       <Container className={styles.content}>
         {
-          cards.map((card) => (
+          cards.filter(card => prop.category.type === -1 || card.meetingInfo.type === prop.category.type)
+                .filter(card => prop.category.tag === -1 || card.meetingInfo.tag === prop.category.tag).map((card) => (
             <CardInfo key={card.meetingInfo.time.nanoseconds} meetingInfo={card.meetingInfo} 
             participants={card.participants} publisher={card.publisher} />
           ))

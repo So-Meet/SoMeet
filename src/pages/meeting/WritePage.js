@@ -67,7 +67,7 @@ const WritePage = () => {
               </div>
             </div>
             <div class="form-group">
-              <input type="datetime-local" id="time" name="date" class="form-control" onChange={handleChange} required/>
+              <input type="datetime-local" id="time" name="time" class="form-control" onChange={handleChange} required/>
             </div>    
           </div>
           <div class="form-group">

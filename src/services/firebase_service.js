@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore } from 'firebase/firestore/lite';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { collection, getDocs, getFirestore, getDoc, deleteDoc, runTransaction, doc, addDoc } from 'firebase/firestore/lite';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
 class FirebaseService {
     constructor() {
@@ -46,7 +46,7 @@ class FirebaseService {
 
             return user;
         }).catch((error) => {
-            // 여기는 어떻게 처리해야할지 고민...
+            // TODO: 여기는 어떻게 처리해야할지 고민...
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
@@ -75,32 +75,6 @@ class FirebaseService {
      * 
      */
 
-    /**
-     * @summary login 기능
-     * @param {string} email 
-     * @param {string} password
-     * @returns {UserImpl} user
-     */
-    async login(email, password) {
-        const user = signInWithEmailAndPassword(this.auth, email, password)
-        .then((userCredential) => {
-            const user = {
-                "accessToken": userCredential.user['accessToken'],
-                "displayedName": userCredential.user['displayedName'],
-                "email": userCredential.user['email'],
-                "uid": userCredential.user['uid']
-            };
-
-            return user;
-        }).catch((error) => {
-            // 여기는 어떻게 처리해야할지 고민...
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-        });
-
-        return user;
-    }
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} link
@@ -155,11 +129,8 @@ class FirebaseService {
     async deleteMeeting(docId) {
         await deleteDoc(doc(this.db, "meetings", docId));
     }
+
     /**
-     * @typedef {Object} Publisher
-     * @property {string} Email
-     * @property {string} Name
-     * 
      * @typedef {Object} MeetingInfo
      * @property {string} Title
      * @property {string} time
@@ -168,28 +139,33 @@ class FirebaseService {
      * @property {string} place
      * @property {string} content
      * @property {string} link
-     * 
-     * @typedef {Object} Meeting
-     * @property {Publisher} Publisher
-     * @property {MeetingInfo} MeetingInfo
      */
 
     /**
      * @summary meeting POST
-     * @param {Meeting} meeting 
+     * @param {MeetingInfo} meetingInfo
      */
-    async createMeeting(meeting) {
-        try {
-            await runTransaction(this.db, async (transaction) => { 
-                // meetings id를 위한 meetingRef 생성
-                const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
-                // 해당 meetings 에 private/meetingInfo 와 publisher 추가
-                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), meeting['publisher']);
-                transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meeting['meetingInfo']);
-            });
-        } catch (e) {
-            console.log("Transaction failed: ", e);
-        }
+    async createMeeting(meetingInfo) {
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(this.db, "users", user.uid);
+                const userInfo = await getDoc(userDocRef);
+                try {
+                    await runTransaction(this.db, async (transaction) => {
+                        // meetings id를 위한 meetingRef 생성
+                        const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
+                        // 해당 meetings 에 private/meetingInfo 와 publisher 추가
+                        transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), userInfo.data());
+                        transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meetingInfo);
+                    });
+                } catch (e) {
+                    console.log("Transaction failed: ", e);
+                }
+            } else {
+                // TODO: 로그인 안했을 때 처리 추가
+                console.log("로그인 해주세요");
+            }
+        });
     }
 }
 

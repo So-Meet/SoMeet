@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, getDoc, doc, deleteDoc, runTransaction, addDoc } from 'firebase/firestore/lite';
+import { collection, getDocs, getFirestore, getDoc, doc, deleteDoc, runTransaction, addDoc, query, where } from 'firebase/firestore/lite';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 class FirebaseService {
@@ -65,15 +65,6 @@ class FirebaseService {
             console.log(error);
         });
     }
-
-    /**
-     * @typedef {Object} user
-     * @property {string} accessToken
-     * @property {string} displayedName
-     * @property {string} email
-     * @property {string} uid
-     * 
-     */
 
     /**
      * @typedef {Object} MeetingInfo
@@ -151,12 +142,12 @@ class FirebaseService {
                 const userDocRef = doc(this.db, "users", user.uid);
                 const userInfo = await getDoc(userDocRef);
                 try {
-                    await runTransaction(this.db, async (transaction) => {
+                    await runTransaction(this.db, async (transaction) => { 
                         // meetings id를 위한 meetingRef 생성
                         const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
                         // 해당 meetings 에 private/meetingInfo 와 publisher 추가
-                        transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), userInfo.data());
-                        transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meetingInfo);
+                                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), userInfo.data());
+                                transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meetingInfo);
                     });
                 } catch (e) {
                     console.log("Transaction failed: ", e);
@@ -192,6 +183,27 @@ class FirebaseService {
         });
     }
 
+    
+    /**
+     * @summary 미팅 참가 취소 DELETE
+     * @param {string} docId 
+     */
+    async leftMeeting(docId) {
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+                const userInfo = await getDoc(doc(this.db, "users", user.uid));
+
+                const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", userInfo.data()['email']));
+                const participantsDoc = await getDocs(q);
+                participantsDoc.docs.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+            } else {
+                // TODO: 로그인 안했을 때 처리 추가
+                console.log("로그인을 해주세요");
+            }
+        });
+    }
 }
 
 export default FirebaseService;

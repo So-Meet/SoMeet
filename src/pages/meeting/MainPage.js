@@ -1,37 +1,31 @@
-import React, { useState } from 'react';
-import {Link} from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import CardInfo from '../../components/Card';
+import CardInfo from '../../components/CardInfo';
 import styles from '../../css/pages/MainPage.module.css';
-import CardGroup from 'react-bootstrap/CardGroup';
+import FirebaseService from '../../services/firebase_service';
 
-const MainPage = () => {
+const MainPage = (prop) => {
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    const firebase = new FirebaseService();
+    firebase.getMeetings().then((values) => {
+      setCards(values);
+    });
+  },[]);
+
   return (
     <>
       <Container className={styles.content}>
-        <CardGroup>
-          <CardInfo />
-          <CardInfo />
-          <CardInfo />
-        </CardGroup>
-        <CardGroup>
-          <CardInfo />
-          <CardInfo />
-          <CardInfo />
-        </CardGroup>
+        {
+          cards.filter(card => prop.category.type === -1 || card.meetingInfo.type === prop.category.type)
+                .filter(card => prop.category.tag === -1 || card.meetingInfo.tag === prop.category.tag).map((card) => (
+            <CardInfo key={card.meetingInfo.time.nanoseconds} meetingInfo={card.meetingInfo} 
+            participants={card.participants} publisher={card.publisher} />
+          ))
+        }
       </Container>
     </>
-
-
-    // <div>
-    //     <h3>메인페이지 - 미팅 목록 페이지</h3>
-    //     <Link to={'/write'}>로그인페이지로 이동</Link>
-    //     <br/>
-    //     <Link to={'/write'}>작성페이지로 이동</Link>
-    //     <br/>
-    //     <Link to={'/detail'}>상세보기로 이동</Link>
-    // </div>
   );
 }
 export default MainPage;

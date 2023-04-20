@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom/dist';
 import SmallCategory from './SmallCategory';
 import { useState } from 'react';
 import Container from 'react-bootstrap/Container';
@@ -6,13 +7,21 @@ import Navbar from 'react-bootstrap/Navbar';
 import styles from '../css/components/Header.module.css';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import FirebaseService from '../services/firebase_service';
 
 
 const Header = (props) => {
+  const movePage = useNavigate();
+  const firebase = new FirebaseService();
+
   const [category, setCategory] = useState({
     flag: -1,
   })
   
+  const handleClick = () => {
+    firebase.logout();
+    movePage("/login");
+  }
 
   const handleChange = (val) => {
     props.propFunction(val,-1);
@@ -34,7 +43,7 @@ const Header = (props) => {
       <Navbar>
         <Container>
           <Navbar.Brand href="/main">So Meet</Navbar.Brand>
-          <Navbar.Brand className={styles.logout} href="/login">로그아웃</Navbar.Brand>
+          <Navbar.Brand className={styles.logout} onClick={handleClick}>로그아웃</Navbar.Brand>
         </Container>
       </Navbar>
 

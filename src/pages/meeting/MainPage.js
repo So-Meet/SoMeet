@@ -19,9 +19,11 @@ const MainPage = (prop) => {
       <Container className={styles.content}>
         {
           cards.filter(card => prop.category.type === -1 || card.meetingInfo.type === prop.category.type)
-                .filter(card => prop.category.tag === -1 || card.meetingInfo.tag === prop.category.tag).map((card) => (
-            <CardInfo key={card.meetingInfo.time.nanoseconds} meetingInfo={card.meetingInfo} 
-            participants={card.participants} publisher={card.publisher} />
+                .filter(card => prop.category.tag === -1 || card.meetingInfo.tag === prop.category.tag)
+                .map((card) => (<CardInfo key={card.meetingInfo.time.nanoseconds} 
+                                meetingInfo={card.meetingInfo} 
+                                participants={card.participants} 
+                                publisher={card.publisher} />
           ))
         }
       </Container>

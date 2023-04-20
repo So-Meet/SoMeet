@@ -18,6 +18,11 @@ nav a:hover {
     line-height: 1;
     background-color: #C6D8F3;
     border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.logout:hover {
+    background-color: #96a4b9;
 }
 
 .header{

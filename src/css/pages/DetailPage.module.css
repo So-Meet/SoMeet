@@ -68,10 +68,10 @@
     background-color:#D1F489 ;
     color:black ;
     margin-left : 2%;
-    margin-right : 3%;
+    margin-right : 4%;
     padding: 1% ;
     height: 30px;
-    width: 25%;
+    width: 24%;
     text-align: center;
     font-size: 15px !important;
     float: left ;
@@ -84,7 +84,7 @@
 }
 .badgetext {
     border: 1px solid black ;
-    margin: 1% ;
+    margin: 1%;
     height: 30px ;
     width: 70%;
     text-align: center;

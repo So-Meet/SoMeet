@@ -22,33 +22,33 @@
     color: gray;
 }
 .button_join{
-    border: solid 2px black;
+    border: solid 2px black !important;
     border-radius: 0rem !important;
-    background-color: #D1F489;
-    color: black;
-    font-weight: bold;
+    background-color: #D1F489 !important;
+    color: black !important;
+    font-weight: bold !important;
 }
 
 .button_join:hover{
-    border: solid 1px black;
+    border: solid 1px black !important;
     border-radius: 0rem !important;
-    background-color: #FFE500;
-    color: red;
-    font-weight: bold;
+    background-color: #FFE500 !important;
+    color: red !important;
+    font-weight: bold !important;
 }
 
 .button_cancel{
-    border: solid 1px black;
+    border: solid 1px black !important;
     border-radius: 0rem !important;
-    background-color: #FFE500;
-    color: red;
-    font-weight: bold;
+    background-color: #FFE500 !important;
+    color: red !important;
+    font-weight: bold !important;
 }
 
 .button_cancel:hover{
-    border: solid 2px black;
+    border: solid 2px black !important;
     border-radius: 0rem !important;
-    background-color: #D1F489;
-    color: black;
-    font-weight: bold;
+    background-color: #D1F489 !important;
+    color: black !important;
+    font-weight: bold !important;
 }

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore } from 'firebase/firestore/lite';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { collection, getDocs, getFirestore, getDoc, doc, deleteDoc, runTransaction, addDoc } from 'firebase/firestore/lite';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 class FirebaseService {
     constructor() {
@@ -75,32 +75,6 @@ class FirebaseService {
      * 
      */
 
-    /**
-     * @summary login 기능
-     * @param {string} email 
-     * @param {string} password
-     * @returns {UserImpl} user
-     */
-    async login(email, password) {
-        const user = signInWithEmailAndPassword(this.auth, email, password)
-        .then((userCredential) => {
-            const user = {
-                "accessToken": userCredential.user['accessToken'],
-                "displayedName": userCredential.user['displayedName'],
-                "email": userCredential.user['email'],
-                "uid": userCredential.user['uid']
-            };
-
-            return user;
-        }).catch((error) => {
-            // 여기는 어떻게 처리해야할지 고민...
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-        });
-
-        return user;
-    }
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} link
@@ -191,6 +165,31 @@ class FirebaseService {
             console.log("Transaction failed: ", e);
         }
     }
+
+    /**
+     * @summary 미팅 참가 POST
+     * @param {string} docId 
+     */
+    async joinMeeting(docId) {
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+                const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
+                const participants = participantsDoc.docs.map(doc => doc.data());
+                
+                const userInfo = await getDoc(doc(this.db, "users", user.uid));
+                
+                // email로 중복 참가 방지
+                for (let i = 0; i < participants.length; i++) {
+                    if (participants[i]['email'] === userInfo.data()['email']) return -1;
+                }
+                await addDoc(collection(this.db, `meetings/${docId}/participants`), userInfo.data());
+            } else {
+                // TODO: 로그인 안했을 때 처리 추가
+                console.log("로그인 해주세요");
+            }
+        });
+    }
+
 }
 
 export default FirebaseService;

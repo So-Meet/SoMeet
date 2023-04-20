@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { collection, getDocs, getFirestore, getDoc, deleteDoc, runTransaction, doc, addDoc } from 'firebase/firestore/lite';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, getDocs, getFirestore, getDoc, doc, deleteDoc, runTransaction, addDoc } from 'firebase/firestore/lite';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 class FirebaseService {
     constructor() {
@@ -167,6 +167,31 @@ class FirebaseService {
             }
         });
     }
+
+    /**
+     * @summary 미팅 참가 POST
+     * @param {string} docId 
+     */
+    async joinMeeting(docId) {
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+                const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
+                const participants = participantsDoc.docs.map(doc => doc.data());
+                
+                const userInfo = await getDoc(doc(this.db, "users", user.uid));
+                
+                // email로 중복 참가 방지
+                for (let i = 0; i < participants.length; i++) {
+                    if (participants[i]['email'] === userInfo.data()['email']) return -1;
+                }
+                await addDoc(collection(this.db, `meetings/${docId}/participants`), userInfo.data());
+            } else {
+                // TODO: 로그인 안했을 때 처리 추가
+                console.log("로그인 해주세요");
+            }
+        });
+    }
+
 }
 
 export default FirebaseService;

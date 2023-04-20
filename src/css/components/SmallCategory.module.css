@@ -1,5 +1,6 @@
 .btn_group {
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
     margin-top: 15px;
 }
 
@@ -7,12 +8,14 @@
     width: 60px;
     height: 25px;
     font-size: 12px !important;
+    line-height: 25px !important;
     margin: 10px 20px 10px 0;
     padding: 0 !important;
     border: none !important;
     border-radius: 0.25rem !important;
     background-color: #C6D8F3 !important;
     color: black !important;
+    flex:none !important;
 }
 
 .btn_small:hover {

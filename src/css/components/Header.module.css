@@ -23,7 +23,6 @@ nav a:hover {
 .header{
     background: #F6EDED4D;
     padding: 30px !important;
-    height: 180px;
     flex-direction: column;
     justify-content: center;
 }
@@ -35,6 +34,9 @@ nav a:hover {
 .btn_large {
     width: 100px;
     height: 40px;
+    padding: 0 !important;
+    line-height: 40px !important;
+    text-align: center;
     margin: 10px 20px 10px 0;
     border-radius: 0.25rem !important;
 }

@@ -1,13 +1,19 @@
 
-import React from 'react';
-import styles from '../../css/pages/DetailPage.module.css';
-import Card from 'react-bootstrap/Card';
+import React, {useState} from 'react';
 import Participant from '../../components/Participant';
-import Badge from 'react-bootstrap/Badge';
 import { Link } from 'react-router-dom';
+import styles from '../../css/pages/DetailPage.module.css';
+import {Card, Badge, Container,Button} from 'react-bootstrap';
+
+const user = {
+  "accessToken": "mock",
+  "displayedName": "연수생xxx",
+  "email":"mock",
+  "uid":"mock"
+};
 
 const info = {//테스트용 객체
-    content:"오늘 밤 치킨 먹어요! 양념 후라이드 다 쌉가능",
+    content:"오늘 밤 치킨 먹어요! 양념 후라이드 다 쌉가능 ",
     link:"https://open.kakao.com/o/gXrV3Sff",
     place:"소마 센터",
     tag:"양식",
@@ -16,36 +22,49 @@ const info = {//테스트용 객체
     type:"식사"
 };
 
+//TODO 참여기능
 const DetailPage = (props) => {
+  const [publisher,setPublisher] = useState(true);
   return (
-    <div class="board-container">
+    <Container className={styles.container}>
+      <div className = {styles.page}>
+        <div className ={styles.infobox}>
+          <Badge bg="" className={styles.titlebadge}>제목</Badge>
+          <Card className={styles.title}>{info.title}</Card>
 
-        <Card className={styles.title2}>{info.title}</Card>
-        <Card.Subtitle className="mb-2 text-muted">게시자명</Card.Subtitle>
-        <Card className={styles.content2}>{info.content}</Card>
+          <Badge bg="" className={styles.titlebadge}>내용</Badge>
+          <Card className={styles.content}>{info.content}</Card>
 
-      <div style={{display: 'flex', flexDirection: 'column',  justifyContent: 'center'}}>
-        <div class ="info-box">    
-          <Badge bg="primary"className={styles.badgetag}>{info.type}</Badge>{' '}
-          <Badge bg="info"className={styles.badgetag}>{info.tag}</Badge>{' '}
-          
-          <Badge bg="info" className={styles.badge2}>장소</Badge>
-          <Card className={styles.text2}>{info.place}</Card>
-          <Badge bg="info" className={styles.badge3}>시간</Badge>
-          <Card className={styles.text2}>{info.time}</Card>
+          <div className ={styles.badgebox}>
+            <Badge bg="" className={`${styles.badge} ${styles.badge1}`}>게시자</Badge>
+            <Card className={styles.badgetext}>{user.displayedName}</Card>
+
+            <Badge bg="" className={styles.badge}>태그</Badge>
+            <Card className={styles.badgetext}>{info.type}/{info.tag}</Card>
+
+            <Badge bg="" className={styles.badge}>장소</Badge>
+            <Card className={styles.badgetext}>{info.place}</Card>
+
+            <Badge bg="" className={styles.badge}>시간</Badge>
+            <Card className={styles.badgetext}>{info.time}</Card>
+
+            <Badge bg="" className={`${styles.badge} ${styles.badge5}`}>오픈채팅</Badge>
+            <Card className={styles.badgetext_link} ><a className={styles.link} href={info.link}>링크</a></Card>
+          </div>
         </div>
-        
-        <Card className={styles.linkbox2}>
-          <Card.Link className={styles.link2} href={info.link}>오픈채팅 링크</Card.Link>    
-        </Card>
+          
+        <div className={styles.participant}>
+          <Participant/>
+        </div>
+        <div className={styles.buttonbox}>
+        <Link to={'/'}><Button variant="outline-primary" className={styles.button}>목록으로</Button>{' '}</Link>
+          {
+            publisher === true &&<Button variant="outline-danger" className={styles.button}>삭제하기</Button>
+          }
+          
+        </div>
       </div>
-      <Participant />
-      <div class="form-buttons">
-          <button class = "main-button"><Link className = "link-main" to ={'/main'}>목록</Link></button>
-          <button type="submit" class="submit-button">참여</button>
-      </div>
-
-  </div>
+    </Container>
   )
 
 }

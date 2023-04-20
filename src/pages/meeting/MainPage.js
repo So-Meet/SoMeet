@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import CardInfo from '../../components/CardInfo';
 import styles from '../../css/pages/MainPage.module.css';
 import FirebaseService from '../../services/firebase_service';
-
+import { Link } from 'react-router-dom';
 const MainPage = (prop) => {
   const [cards, setCards] = useState([]);
 
@@ -27,6 +27,8 @@ const MainPage = (prop) => {
           ))
         }
       </Container>
+            <Link to={'/write'}>작성페이지로 이동</Link>
+   
     </>
   );
 }

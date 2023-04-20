@@ -3,13 +3,12 @@ version: '3'
 services:
   app:
     container_name: someet
-    build: .
+    build:
+      dockerfile: Dockerfile
     volumes:
       - ".:/app"
       - "/app/node_modules"
     ports:
       - "3000:3000"
-    stdin_open: true
-    tty: true  
-    # environment:
-    #   - CHOKIDAR_USEPOLLING=true
+    environment:
+      - CHOKIDAR_USEPOLLING=true

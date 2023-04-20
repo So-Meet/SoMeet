@@ -1,0 +1,54 @@
+.card {
+    border: 1px solid black !important;
+    padding: 0 !important;
+    border-radius: 0.25rem !important;
+    background-color: #89F0F5 !important;
+
+    
+    /* cursor: pointer; */
+}
+.cardheader{
+    text-align: center;
+    color:black !important;
+    font-size: 20px !important;
+    font-weight: bold;
+    height: 40px;
+}
+.item{
+    height: 30px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    color: gray;
+}
+.button_join{
+    border: solid 2px black;
+    border-radius: 0rem !important;
+    background-color: #D1F489;
+    color: black;
+    font-weight: bold;
+}
+
+.button_join:hover{
+    border: solid 1px black;
+    border-radius: 0rem !important;
+    background-color: #FFE500;
+    color: red;
+    font-weight: bold;
+}
+
+.button_cancel{
+    border: solid 1px black;
+    border-radius: 0rem !important;
+    background-color: #FFE500;
+    color: red;
+    font-weight: bold;
+}
+
+.button_cancel:hover{
+    border: solid 2px black;
+    border-radius: 0rem !important;
+    background-color: #D1F489;
+    color: black;
+    font-weight: bold;
+}

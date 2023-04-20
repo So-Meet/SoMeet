@@ -18,9 +18,15 @@ const CardInfo = (props) => {
   }
 
   function toDetailPage() {
-    movePage('/detail');
+    movePage('/detail',
+    {
+      state: {
+        meetingInfo: meetingInfo,
+        publisher: publisher,
+        participants: participants
+      }
+    });
   }
-
   return (
     <>
       <Card onClick={toDetailPage} className={styles.card}>

@@ -10,18 +10,17 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 
 
-const participants = [] //테스트용 mock객체들
-for(let i = 0;i<5;i++){
-    participants.push({"email":"test"+i+"@email.com","name":"참여자"+i})
-}
+// const participants = [] //테스트용 mock객체들
+// for(let i = 0;i<5;i++){
+//     participants.push({"email":"test"+i+"@email.com","name":"참여자"+i})
+// }
 
 
 
 
 
-const Participant = () => {
-
-    // const db = new FirebaseService();
+const Participant = (props) => {
+    const participants = props.participants;
     const [flag, setFlag] = useState(false)
       const participate = () =>{
         setFlag(!flag)

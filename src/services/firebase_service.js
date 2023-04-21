@@ -207,18 +207,16 @@ class FirebaseService {
      * @param {string} docId 
      */
     async joinMeeting(docId) {
-        onAuthStateChanged(this.auth, async (user) => {
+        this.getUserInfo().then(async (user) => {
             if (user) {
                 const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
                 const participants = participantsDoc.docs.map(doc => doc.data());
                 
-                const userInfo = await getDoc(doc(this.db, "users", user.uid));
-                
                 // email로 중복 참가 방지
                 for (let i = 0; i < participants.length; i++) {
-                    if (participants[i]['email'] === userInfo.data()['email']) return -1;
+                    if (participants[i]['email'] === user['email']) return -1;
                 }
-                await addDoc(collection(this.db, `meetings/${docId}/participants`), userInfo.data());
+                await addDoc(collection(this.db, `meetings/${docId}/participants`), user);
             } else {
                 // TODO: 로그인 안했을 때 처리 추가
                 console.log("로그인 해주세요");

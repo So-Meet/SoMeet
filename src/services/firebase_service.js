@@ -114,7 +114,7 @@ class FirebaseService {
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} link
-     * @property {string} time
+     * @property {Date} time
      * @property {string} tag
      * @property {string} place
      * @property {string} title
@@ -169,7 +169,7 @@ class FirebaseService {
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} Title
-     * @property {string} time
+     * @property {Date} time
      * @property {string} type
      * @property {string} tag
      * @property {string} place

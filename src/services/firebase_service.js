@@ -17,6 +17,15 @@ class FirebaseService {
         this.app = initializeApp(this.firebaseConfig);
         this.db = getFirestore(this.app);
         this.auth = getAuth(this.app);
+        this.user = null;
+
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+                this.user = user;
+            } else {
+                this.user = null;
+            }
+        })
     }
 
     /**
@@ -53,6 +62,42 @@ class FirebaseService {
         });
 
         return user;
+    }
+
+    /**
+     * @typedef {Object} User
+     * @property {string} email
+     * @property {string} name
+     */
+
+    /**
+     * @summary 유저 정보 GET
+     * @returns {User} user
+     */
+    async getUserInfo() {
+        if (!this.user) {
+            await new Promise(resolve => {
+                const unsubscribe = onAuthStateChanged(this.auth, async (user) => {
+                  if (user) {
+                    this.user = user; // 사용자 정보를 클래스 인스턴스 속성에 저장
+                    unsubscribe(); // 콜백 함수 등록 해제
+                    resolve(); // 대기 상태 종료
+                  } else {
+                    this.user = null; // 사용자 정보를 클래스 인스턴스 속성에 저장
+                    unsubscribe(); // 콜백 함수 등록 해제
+                    resolve(); // 대기 상태 종료
+                  }
+                });
+              });
+        }
+        if (this.user) {
+            const userDocRef = doc(this.db, "users", this.user.uid);
+            const userInfo = await getDoc(userDocRef);
+
+            return userInfo.data();
+        } else {
+            return null;
+        }
     }
 
     /**

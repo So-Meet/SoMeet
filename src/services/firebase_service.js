@@ -182,16 +182,14 @@ class FirebaseService {
      * @param {MeetingInfo} meetingInfo
      */
     async createMeeting(meetingInfo) {
-        onAuthStateChanged(this.auth, async (user) => {
+        this.getUserInfo().then(async (user) => {
             if (user) {
-                const userDocRef = doc(this.db, "users", user.uid);
-                const userInfo = await getDoc(userDocRef);
                 try {
                     await runTransaction(this.db, async (transaction) => { 
                         // meetings id를 위한 meetingRef 생성
                         const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
                         // 해당 meetings 에 private/meetingInfo 와 publisher 추가
-                                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), userInfo.data());
+                                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), user);
                                 transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meetingInfo);
                     });
                 } catch (e) {

@@ -17,6 +17,15 @@ class FirebaseService {
         this.app = initializeApp(this.firebaseConfig);
         this.db = getFirestore(this.app);
         this.auth = getAuth(this.app);
+        this.user = null;
+
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user) {
+                this.user = user;
+            } else {
+                this.user = null;
+            }
+        })
     }
 
     /**
@@ -56,6 +65,42 @@ class FirebaseService {
     }
 
     /**
+     * @typedef {Object} User
+     * @property {string} email
+     * @property {string} name
+     */
+
+    /**
+     * @summary 유저 정보 GET
+     * @returns {User} user
+     */
+    async getUserInfo() {
+        if (!this.user) {
+            await new Promise(resolve => {
+                const unsubscribe = onAuthStateChanged(this.auth, async (user) => {
+                  if (user) {
+                    this.user = user; // 사용자 정보를 클래스 인스턴스 속성에 저장
+                    unsubscribe(); // 콜백 함수 등록 해제
+                    resolve(); // 대기 상태 종료
+                  } else {
+                    this.user = null; // 사용자 정보를 클래스 인스턴스 속성에 저장
+                    unsubscribe(); // 콜백 함수 등록 해제
+                    resolve(); // 대기 상태 종료
+                  }
+                });
+              });
+        }
+        if (this.user) {
+            const userDocRef = doc(this.db, "users", this.user.uid);
+            const userInfo = await getDoc(userDocRef);
+
+            return userInfo.data();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @summary logout 기능
      */
     async logout() {
@@ -69,7 +114,7 @@ class FirebaseService {
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} link
-     * @property {string} time
+     * @property {Date} time
      * @property {string} tag
      * @property {string} place
      * @property {string} title
@@ -80,6 +125,7 @@ class FirebaseService {
      * @property {string} name
      * 
      * @typedef {Object} Meeting
+     * @property {string} docId
      * @property {Array<Participant>} Participants
      * @property {MeetingInfo} MeetingInfo
      * @property {Publisher} Publisher
@@ -95,7 +141,7 @@ class FirebaseService {
         const meetingSnapshot = await getDocs(meetingsCol);
         const meetingList =await Promise.all(meetingSnapshot.docs.map(async (doc) => {
             let meeting = {}
-
+            meeting['docId'] = doc.id;
             const partipantsSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'participants'));
             meeting['participants'] = partipantsSnapshot.docs.map(d => d.data());
             
@@ -124,7 +170,7 @@ class FirebaseService {
     /**
      * @typedef {Object} MeetingInfo
      * @property {string} Title
-     * @property {string} time
+     * @property {Date} time
      * @property {string} type
      * @property {string} tag
      * @property {string} place
@@ -137,26 +183,24 @@ class FirebaseService {
      * @param {MeetingInfo} meetingInfo
      */
     async createMeeting(meetingInfo) {
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-                const userDocRef = doc(this.db, "users", user.uid);
-                const userInfo = await getDoc(userDocRef);
-                try {
-                    await runTransaction(this.db, async (transaction) => { 
-                        // meetings id를 위한 meetingRef 생성
-                        const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
-                        // 해당 meetings 에 private/meetingInfo 와 publisher 추가
-                                transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), userInfo.data());
-                                transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meetingInfo);
-                    });
-                } catch (e) {
-                    console.log("Transaction failed: ", e);
-                }
-            } else {
-                // TODO: 로그인 안했을 때 처리 추가
-                console.log("로그인 해주세요");
+        const user = this.getUserInfo();
+        
+        if (user) {
+            try {
+                await runTransaction(this.db, async (transaction) => { 
+                    // meetings id를 위한 meetingRef 생성
+                    const meetingRef = await addDoc(collection(this.db, 'meetings'), {});
+                    // 해당 meetings 에 private/meetingInfo 와 publisher 추가
+                            transaction.set(doc(collection(this.db, `meetings/${meetingRef.id}/publisher`)), user);
+                            transaction.set(doc(this.db, `meetings/${meetingRef.id}/private`, 'meetingInfo'), meetingInfo);
+                });
+            } catch (e) {
+                console.log("Transaction failed: ", e);
             }
-        });
+        } else {
+            // TODO: 로그인 안했을 때 처리 추가
+            console.log("로그인 해주세요");
+        }
     }
 
     /**
@@ -164,23 +208,21 @@ class FirebaseService {
      * @param {string} docId 
      */
     async joinMeeting(docId) {
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-                const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
-                const participants = participantsDoc.docs.map(doc => doc.data());
-                
-                const userInfo = await getDoc(doc(this.db, "users", user.uid));
-                
-                // email로 중복 참가 방지
-                for (let i = 0; i < participants.length; i++) {
-                    if (participants[i]['email'] === userInfo.data()['email']) return -1;
-                }
-                await addDoc(collection(this.db, `meetings/${docId}/participants`), userInfo.data());
-            } else {
-                // TODO: 로그인 안했을 때 처리 추가
-                console.log("로그인 해주세요");
+        const user = this.getUserInfo();
+        
+        if (user) {
+            const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
+            const participants = participantsDoc.docs.map(doc => doc.data());
+            
+            // email로 중복 참가 방지
+            for (let i = 0; i < participants.length; i++) {
+                if (participants[i]['email'] === user['email']) return -1;
             }
-        });
+            await addDoc(collection(this.db, `meetings/${docId}/participants`), user);
+        } else {
+            // TODO: 로그인 안했을 때 처리 추가
+            console.log("로그인 해주세요");
+        }
     }
 
     
@@ -189,20 +231,18 @@ class FirebaseService {
      * @param {string} docId 
      */
     async leftMeeting(docId) {
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-                const userInfo = await getDoc(doc(this.db, "users", user.uid));
+        const user = this.getUserInfo();
 
-                const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", userInfo.data()['email']));
-                const participantsDoc = await getDocs(q);
-                participantsDoc.docs.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
-            } else {
-                // TODO: 로그인 안했을 때 처리 추가
-                console.log("로그인을 해주세요");
-            }
-        });
+        if (user) {
+            const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", user['email']));
+            const participantsDoc = await getDocs(q);
+            participantsDoc.docs.forEach(async (doc) => {
+                await deleteDoc(doc.ref);
+            });
+        } else {
+            // TODO: 로그인 안했을 때 처리 추가
+            console.log("로그인을 해주세요");
+        }
     }
 }
 

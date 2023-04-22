@@ -9,6 +9,7 @@ const CardInfo = (props) => {
   const meetingInfo = props.meetingInfo;
   const publisher = props.publisher;
   const participants = props.participants;
+  const docId = props.docId;
 
   function toDateTime(secs) {
     var t = new Date(1970, 0, 1); // Epoch
@@ -18,9 +19,16 @@ const CardInfo = (props) => {
   }
 
   function toDetailPage() {
-    movePage('/detail');
+    movePage('/detail',
+    {
+      state: {
+        meetingInfo: meetingInfo,
+        publisher: publisher,
+        participants: participants,
+        docId: docId
+      }
+    });
   }
-
   return (
     <>
       <Card onClick={toDetailPage} className={styles.card}>

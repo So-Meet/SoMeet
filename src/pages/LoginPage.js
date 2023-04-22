@@ -10,20 +10,25 @@ const LoginPage = () => {
     const [email, setEmail] = useState("")
     const [pwd,setPwd] = useState("");
 
-    //ref쓰는게 맞나?
+
     const login = (e)=>{
         e.preventDefault();
         console.log("login success");
         
-        const user = firebase.login(email,pwd);
+
+        firebase.login(email,pwd);
+
         // eslint-disable-next-line no-restricted-globals
-        location.replace("/")
+        location.replace("/");
+
 
         //TODO 성공 실패 분기
     }
     
     return (
-        <Container className={styles.container}>
+
+        <Container className={styles.container}> 
+
             <Form onSubmit={login}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>이메일</Form.Label>

@@ -230,20 +230,18 @@ class FirebaseService {
      * @param {string} docId 
      */
     async leftMeeting(docId) {
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-                const userInfo = await getDoc(doc(this.db, "users", user.uid));
+        const user = this.getUserInfo();
 
-                const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", userInfo.data()['email']));
-                const participantsDoc = await getDocs(q);
-                participantsDoc.docs.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
-            } else {
-                // TODO: 로그인 안했을 때 처리 추가
-                console.log("로그인을 해주세요");
-            }
-        });
+        if (user) {
+            const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", user['email']));
+            const participantsDoc = await getDocs(q);
+            participantsDoc.docs.forEach(async (doc) => {
+                await deleteDoc(doc.ref);
+            });
+        } else {
+            // TODO: 로그인 안했을 때 처리 추가
+            console.log("로그인을 해주세요");
+        }
     }
 }
 

@@ -125,6 +125,7 @@ class FirebaseService {
      * @property {string} name
      * 
      * @typedef {Object} Meeting
+     * @property {string} docId
      * @property {Array<Participant>} Participants
      * @property {MeetingInfo} MeetingInfo
      * @property {Publisher} Publisher
@@ -140,7 +141,7 @@ class FirebaseService {
         const meetingSnapshot = await getDocs(meetingsCol);
         const meetingList =await Promise.all(meetingSnapshot.docs.map(async (doc) => {
             let meeting = {}
-
+            meeting['docId'] = doc.id;
             const partipantsSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'participants'));
             meeting['participants'] = partipantsSnapshot.docs.map(d => d.data());
             

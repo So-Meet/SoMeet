@@ -5,26 +5,6 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from '../../css/pages/DetailPage.module.css';
 import {Card, Badge, Container,Button} from 'react-bootstrap';
 
-// const publisher = {
-//   "accessToken": "mock",
-//   "displayedName": "연수생xxx",
-//   "email":"mock",
-//   "uid":"mock"
-// };
-
-// const info = {//테스트용 객체
-//     content:"오늘 밤 치킨 먹어요! 양념 후라이드 다 쌉가능 ",
-//     link:"https://open.kakao.com/o/gXrV3Sff",
-//     place:"소마 센터",
-//     tag:"양식",
-//     time:{
-//       nanoseconds: 133000000,
-//       seconds: 1681905600
-//     },
-//     title:"치맥팟 구합니다!",
-//     type:"식사"
-// };
-
 //TODO 참여기능
 const DetailPage = (props) => {
   const location = useLocation();
@@ -32,14 +12,17 @@ const DetailPage = (props) => {
   const info = state.meetingInfo;
   const publisher = state.publisher;
   const participants = state.participants;
+  const docId = state.docId;
+
+  const [isPub,setIsPub] = useState(true);
+
   function toDateTime(secs) {
     var t = new Date(1970, 0, 1); // Epoch
     t.setSeconds(secs);
     return t;
   }
-
-
-  const [isPub,setIsPub] = useState(true);
+  
+  
   return (
     <Container className={styles.container}>
       <div className = {styles.page}>
@@ -69,7 +52,7 @@ const DetailPage = (props) => {
         </div>
           
         <div className={styles.participant}>
-          <Participant participants={participants}/>
+          <Participant participants={participants} docId={docId}/>
           {/* <Participant/> */}
         </div>
         <div className={styles.buttonbox}>

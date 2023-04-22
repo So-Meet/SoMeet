@@ -23,7 +23,8 @@ const MainPage = (prop) => {
                 .map((card) => (<CardInfo key={card.meetingInfo.time.nanoseconds} 
                                 meetingInfo={card.meetingInfo} 
                                 participants={card.participants} 
-                                publisher={card.publisher} />
+                                publisher={card.publisher}
+                                docId={card.docId} />
           ))
         }
       </Container>

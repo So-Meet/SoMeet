@@ -1,29 +1,53 @@
-import React, { useState } from 'react';
-import {Link} from 'react-router-dom';
-import { Container, Button } from 'react-bootstrap';
-// import FirebaseService from '../services/firebase_service';
+import React, { useEffect, useState } from 'react';
+import {Card,ListGroup, Container, Button } from 'react-bootstrap';
 import styles from '../css/components/Participant.module.css';
-
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
-
-
-
-
-// const participants = [] //테스트용 mock객체들
-// for(let i = 0;i<5;i++){
-//     participants.push({"email":"test"+i+"@email.com","name":"참여자"+i})
-// }
-
-
-
-
+import FirebaseService from '../services/firebase_service';
 
 const Participant = (props) => {
     const participants = props.participants;
-    const [flag, setFlag] = useState(false)
-      const participate = () =>{
-        setFlag(!flag)
+    const docId = props.docId;
+    const firebase = new FirebaseService();
+    
+    const [isJoin, setIsJoin] = useState(false)
+    const user = firebase.getUserInfo()
+
+
+    const join = () =>{
+        try {
+            for (let i = 0; i < participants.length; i++) {
+                if (participants[i]['email'] === user['email']){ 
+                    setIsJoin(true)
+                    return -1;
+                }
+            }
+
+            firebase.joinMeeting(docId);
+            //성공시
+            user.then((u) => {
+                participants[participants.length]={'name': u.name, 'email':u.email};
+            });
+            setIsJoin(true)
+        } catch (error) {
+            console.log(error)
+        }
+        
+    }
+    const left = () =>{
+        try {
+            firebase.leftMeeting(docId);
+            //성공시
+            user.then((u) => {
+                for(let i = 0; i < participants.length; i++) {
+                    if(participants[i].email == u.email)  {
+                        participants.splice(i, 1);
+                        break;
+                    }
+                }
+            });
+            setIsJoin(false)
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         // <Card style={{ width: '18rem' }}>
@@ -33,13 +57,13 @@ const Participant = (props) => {
             <ListGroup variant="flush">
                 {participants.map(function(e){
                     return(
-                        <ListGroup.Item className={styles.item}>{e.name}</ListGroup.Item>
+                        <ListGroup.Item key={e.email} className={styles.item}>{e.name}</ListGroup.Item>
                     );
                 })}
                 {
-                    flag === false
-                    ? <Button variant="" className={styles.button_join} onClick={participate}>참여하기</Button>
-                    : <Button variant="" className={styles.button_cancel} onClick={participate}>참여취소</Button>
+                    isJoin === false
+                    ? <Button variant="" className={styles.button_join} onClick={join}>참여하기</Button>
+                    : <Button variant="" className={styles.button_cancel} onClick={left}>참여취소</Button>
                 }
             </ListGroup>
 

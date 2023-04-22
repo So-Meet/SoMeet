@@ -125,6 +125,7 @@ class FirebaseService {
      * @property {string} name
      * 
      * @typedef {Object} Meeting
+     * @property {string} docId
      * @property {Array<Participant>} Participants
      * @property {MeetingInfo} MeetingInfo
      * @property {Publisher} Publisher
@@ -140,7 +141,7 @@ class FirebaseService {
         const meetingSnapshot = await getDocs(meetingsCol);
         const meetingList =await Promise.all(meetingSnapshot.docs.map(async (doc) => {
             let meeting = {}
-
+            meeting['docId'] = doc.id;
             const partipantsSnapshot = await getDocs(collection(this.db, 'meetings', doc.id, 'participants'));
             meeting['participants'] = partipantsSnapshot.docs.map(d => d.data());
             
@@ -207,23 +208,21 @@ class FirebaseService {
      * @param {string} docId 
      */
     async joinMeeting(docId) {
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-                const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
-                const participants = participantsDoc.docs.map(doc => doc.data());
-                
-                const userInfo = await getDoc(doc(this.db, "users", user.uid));
-                
-                // email로 중복 참가 방지
-                for (let i = 0; i < participants.length; i++) {
-                    if (participants[i]['email'] === userInfo.data()['email']) return -1;
-                }
-                await addDoc(collection(this.db, `meetings/${docId}/participants`), userInfo.data());
-            } else {
-                // TODO: 로그인 안했을 때 처리 추가
-                console.log("로그인 해주세요");
+        const user = this.getUserInfo();
+        
+        if (user) {
+            const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
+            const participants = participantsDoc.docs.map(doc => doc.data());
+            
+            // email로 중복 참가 방지
+            for (let i = 0; i < participants.length; i++) {
+                if (participants[i]['email'] === user['email']) return -1;
             }
-        });
+            await addDoc(collection(this.db, `meetings/${docId}/participants`), user);
+        } else {
+            // TODO: 로그인 안했을 때 처리 추가
+            console.log("로그인 해주세요");
+        }
     }
 
     
@@ -232,20 +231,18 @@ class FirebaseService {
      * @param {string} docId 
      */
     async leftMeeting(docId) {
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user) {
-                const userInfo = await getDoc(doc(this.db, "users", user.uid));
+        const user = this.getUserInfo();
 
-                const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", userInfo.data()['email']));
-                const participantsDoc = await getDocs(q);
-                participantsDoc.docs.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
-            } else {
-                // TODO: 로그인 안했을 때 처리 추가
-                console.log("로그인을 해주세요");
-            }
-        });
+        if (user) {
+            const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", user['email']));
+            const participantsDoc = await getDocs(q);
+            participantsDoc.docs.forEach(async (doc) => {
+                await deleteDoc(doc.ref);
+            });
+        } else {
+            // TODO: 로그인 안했을 때 처리 추가
+            console.log("로그인을 해주세요");
+        }
     }
 }
 

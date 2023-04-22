@@ -183,7 +183,7 @@ class FirebaseService {
      * @param {MeetingInfo} meetingInfo
      */
     async createMeeting(meetingInfo) {
-        const user = this.getUserInfo();
+        const user = await this.getUserInfo();
         
         if (user) {
             try {
@@ -208,7 +208,7 @@ class FirebaseService {
      * @param {string} docId 
      */
     async joinMeeting(docId) {
-        const user = this.getUserInfo();
+        const user = await this.getUserInfo();
         
         if (user) {
             const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
@@ -231,7 +231,7 @@ class FirebaseService {
      * @param {string} docId 
      */
     async leftMeeting(docId) {
-        const user = this.getUserInfo();
+        const user = await this.getUserInfo();
 
         if (user) {
             const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", user['email']));

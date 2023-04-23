@@ -16,10 +16,9 @@ const LoginPage = () => {
         console.log("login success");
         
 
-        firebase.login(email,pwd);
+        sessionStorage.setItem("login flag",(firebase.login(email,pwd) !== null));
 
-        // eslint-disable-next-line no-restricted-globals
-        location.replace("/");
+        window.location.href = "/";
 
 
         //TODO 성공 실패 분기

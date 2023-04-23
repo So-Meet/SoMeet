@@ -52,7 +52,6 @@ class FirebaseService {
                 "email": userCredential.user['email'],
                 "uid": userCredential.user['uid']
             };
-
             return user;
         }).catch((error) => {
             // TODO: 여기는 어떻게 처리해야할지 고민...
@@ -105,7 +104,7 @@ class FirebaseService {
      */
     async logout() {
         signOut(this.auth).then(() => {
-
+            
         }).catch((error) => {
             console.log(error);
         });
@@ -185,7 +184,7 @@ class FirebaseService {
     async createMeeting(meetingInfo) {
         const user = await this.getUserInfo();
         
-        if (user) {
+        if (sessionStorage.getItem("login flag") === "true") {
             try {
                 await runTransaction(this.db, async (transaction) => { 
                     // meetings id를 위한 meetingRef 생성
@@ -210,7 +209,7 @@ class FirebaseService {
     async joinMeeting(docId) {
         const user = await this.getUserInfo();
         
-        if (user) {
+        if (sessionStorage.getItem("login flag") === "true") {
             const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
             const participants = participantsDoc.docs.map(doc => doc.data());
             
@@ -233,7 +232,7 @@ class FirebaseService {
     async leftMeeting(docId) {
         const user = await this.getUserInfo();
 
-        if (user) {
+        if (sessionStorage.getItem("login flag") === "true") {
             const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", user['email']));
             const participantsDoc = await getDocs(q);
             participantsDoc.docs.forEach(async (doc) => {

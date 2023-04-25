@@ -167,13 +167,13 @@ class FirebaseService {
         
         if (sessionStorage.getItem("login flag") === "true") {
             // 게시자가 유저와 같은지 비교
-            const meetingRef = doc(this.db, "meetings", docId);
-            const meetingDoc = await getDoc(meetingRef);
-            // if (meetingDoc.data().publisher.email === user.email) {
-            //     await deleteDoc(meetingRef);
-            // } else {
-            //     throw new Error("삭제 권한이 없습니다.");
-            // }
+            const publisherSnapshot = await getDocs(collection(this.db, 'meetings', docId, 'publisher'));
+            const publisher = publisherSnapshot.docs.map(d => d.data())[0];
+            if (publisher.email === user.email) {
+                await deleteDoc(doc(this.db, "meetings", docId));
+            } else {
+                throw new Error("삭제 권한이 없습니다.");
+            }
         }
     }
 

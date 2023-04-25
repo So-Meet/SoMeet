@@ -13,29 +13,26 @@ const Participant = (props) => {
 
 
     const join = () =>{
-        try {
-            for (let i = 0; i < participants.length; i++) {
-                if (participants[i]['email'] === user['email']){ 
-                    setIsJoin(true)
-                    return -1;
-                }
+        for (let i = 0; i < participants.length; i++) {
+            if (participants[i]['email'] === user['email']){ 
+                setIsJoin(true)
+                return -1;
             }
-
-            firebase.joinMeeting(docId);
-            //성공시
-            user.then((u) => {
-                participants[participants.length]={'name': u.name, 'email':u.email};
-            });
-            setIsJoin(true)
-        } catch (error) {
-            console.log(error)
         }
+
+        firebase.joinMeeting(docId).then(() => {
+            //성공시
+            participants[participants.length]={'name': user.name, 'email':user.email};
+            setIsJoin(true);
+        }).catch((e) => {
+            console.log(e);
+            alert(e.message);
+        });
         
     }
     const left = () =>{
-        try {
-            firebase.leftMeeting(docId);
-            //성공시
+        firebase.leftMeeting(docId).then(() => {
+            // 성공시
             user.then((u) => {
                 for(let i = 0; i < participants.length; i++) {
                     if(participants[i].email == u.email)  {
@@ -45,9 +42,9 @@ const Participant = (props) => {
                 }
             });
             setIsJoin(false)
-        } catch (error) {
-            console.log(error)
-        }
+        }).catch((e) => {
+            alert(e.message);
+        });
     }
     return (
         // <Card style={{ width: '18rem' }}>

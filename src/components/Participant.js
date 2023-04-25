@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {Card,ListGroup, Container, Button } from 'react-bootstrap';
 import styles from '../css/components/Participant.module.css';
 import FirebaseService from '../services/firebase_service';
@@ -11,19 +11,22 @@ const Participant = (props) => {
     const [isJoin, setIsJoin] = useState(false)
     const user = firebase.getUserInfo()
 
-
-    const join = () =>{
+    user.then(u => {
         for (let i = 0; i < participants.length; i++) {
-            if (participants[i]['email'] === user['email']){ 
+            if (participants[i]['email'] === u['email']){ 
                 setIsJoin(true)
                 return -1;
             }
         }
+    })
 
+    const join = () =>{
         firebase.joinMeeting(docId).then(() => {
             //성공시
-            participants[participants.length]={'name': user.name, 'email':user.email};
-            setIsJoin(true);
+            user.then(u => {
+                participants[participants.length]={'name': u.name, 'email':u.email};
+                setIsJoin(true);
+            })
         }).catch((e) => {
             console.log(e);
             alert(e.message);
@@ -35,13 +38,13 @@ const Participant = (props) => {
             // 성공시
             user.then((u) => {
                 for(let i = 0; i < participants.length; i++) {
-                    if(participants[i].email == u.email)  {
+                    if(participants[i].email === u.email)  {
                         participants.splice(i, 1);
                         break;
                     }
                 }
+                setIsJoin(false)
             });
-            setIsJoin(false)
         }).catch((e) => {
             alert(e.message);
         });

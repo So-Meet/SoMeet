@@ -26,7 +26,10 @@ const App = () => {
 	return (
 		<div className='App'>
 			<BrowserRouter>
-				<Container style={{marginTop: 10}}>
+				<Container style={{
+            marginTop: 10,
+            border: '1px solid gray',            
+           }}>
 
           <Header login_flag={login_flag} category={category} propFunction={handleCategoryChange} />	
 

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cute+Font&display=swap');
 .container {
     padding: 1%;
     align-items: center;
@@ -7,48 +8,38 @@
 .page{
     border: 1px solid black;
     border-radius: 1%;
-    background-color: #FFFFFF;
     display: inline-block;
     width: 100%;
+
 }    
 
 .infobox{
-    margin-top: 1%;
-    width:70%;
-    display: block;
+    /* margin-top: 1%; */
+    margin-left: auto;
+    margin-right: auto;
+    width:60%;
+    /* background-color: aquamarine; */
+    /* display: block; */
     float: left;
 }
 
-.titlebadge{
-    border: 1px solid black;
-    background-color: 	#89F0F5 ;
-    margin: 1% 1% 0% 1%;
-    height: 40px;
-    width: 25%;
-    color:gray ;
-    font-size: 20px !important;
-    text-align: center;
-    float: left ;
-    padding: 1%;
-}
 
 .title{
-    width: 70%;
-    border: 1px solid black ;
-    margin:1%;
-    height: 40px;
-    font-size: 16px;
-    padding: 8px;
+    width: 98%;
+    border:none !important;
+    margin:2%;
+    font-size: 40px;
     font-weight: bold;
+    font-family: 'Cute Font', cursive;
 }
 .content{
-    width: 70%;
-    border: 1px solid black ;
-    margin:1%;
+    width: 98%;
+    border:none !important;
+    margin:2%;
     margin-top: 2%;
-    font-size: 16px;
-    padding: 8px;
+    font-size: 24px;
     font-weight: 500;
+    font-family: 'Cute Font', cursive;
     float: none;
     
 }
@@ -57,48 +48,45 @@
 .badgebox{
     align-items: center;
     margin-top: 1%;
-    width:95%;
+    width:99%;
     display: block;
     float: left;
-    /* background-color: aquamarine; */
 }
 
 .badge {
-    border: 1px solid black;
-    background-color:#D1F489 ;
-    color:black ;
+    color:black !important;
     margin-left : 2%;
-    margin-right : 4%;
     padding: 1% ;
     height: 30px;
-    width: 24%;
-    text-align: center;
-    font-size: 15px !important;
+    width: 15%;
+    text-align: left;
+    font-size: 20px !important;
+    font-family: 'Cute Font', cursive;
     float: left ;
 }
 .badge1{
     margin-top: 1%;
 }
-.badge5{
-    background-color: #FFE500;
-}
+
 .badgetext {
-    border: 1px solid black ;
+    background-color: whitesmoke;
+    border: none !important;
     margin: 1%;
     height: 30px ;
-    width: 70%;
-    text-align: center;
+    width: 83%;
+    font-size: 20px !important;
+    font-family: 'Cute Font', cursive;
     float: none ;
     white-space: nowrap;
 }
 .badgetext_link {
-    border: 1px solid black ;
-    background-color: #FFE500;
+    border: 2px solid gray ;
+    background-color: #FFE533 !important;
     margin: 1% ;
-    height: 30px ;
-    width: 70%;
+    width: 55%;
+    height: 35px;
     text-align: center;
-    float: none ;
+    float: left ;
     white-space: nowrap;
     
 }
@@ -122,23 +110,20 @@
     color: skyblue;
 }
 
-.participant{
-    margin-top: 1%;
-    padding: 1% 0;
-    display: block;
-    width: 20%;
-    float: left;
-}
-
-.buttonbox{
-    width: 10%;
-    margin-top: 1%;
-    padding: 1% 0;
-    display: block;
-    float: left;
-    
-}
 .button{
     font-weight: bold;
     border: 3px solid;
+    margin: 1%;
+    width: 19%;
+    height: 35px;
+    /* display: block; */
+    float: left;
+}
+
+.participant{
+    margin-top: 1%;
+    padding: 1%;
+    display: block;
+    width: 30%;
+    float: left;
 }

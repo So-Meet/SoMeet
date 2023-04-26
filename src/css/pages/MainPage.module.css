@@ -2,7 +2,7 @@
     width: 100%;
     margin-top: 20px;
     padding: 20px;
-    background: rgba(233, 227, 227, 0.3);
+    /* background: rgba(233, 227, 227, 0.3); */
     display: flex;
     flex-wrap: wrap;
 }

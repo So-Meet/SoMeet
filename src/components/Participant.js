@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {Card,ListGroup, Container, Button } from 'react-bootstrap';
 import styles from '../css/components/Participant.module.css';
 import FirebaseService from '../services/firebase_service';
@@ -11,43 +11,43 @@ const Participant = (props) => {
     const [isJoin, setIsJoin] = useState(false)
     const user = firebase.getUserInfo()
 
+    user.then(u => {
+        for (let i = 0; i < participants.length; i++) {
+            if (participants[i]['email'] === u['email']){ 
+                setIsJoin(true)
+                return -1;
+            }
+        }
+    })
 
     const join = () =>{
-        try {
-            for (let i = 0; i < participants.length; i++) {
-                if (participants[i]['email'] === user['email']){ 
-                    setIsJoin(true)
-                    return -1;
-                }
-            }
-
-            firebase.joinMeeting(docId);
+        firebase.joinMeeting(docId).then(() => {
             //성공시
-            user.then((u) => {
+            user.then(u => {
                 participants[participants.length]={'name': u.name, 'email':u.email};
-            });
-            setIsJoin(true)
-        } catch (error) {
-            console.log(error)
-        }
+                setIsJoin(true);
+            })
+        }).catch((e) => {
+            console.log(e);
+            alert(e.message);
+        });
         
     }
     const left = () =>{
-        try {
-            firebase.leftMeeting(docId);
-            //성공시
+        firebase.leftMeeting(docId).then(() => {
+            // 성공시
             user.then((u) => {
                 for(let i = 0; i < participants.length; i++) {
-                    if(participants[i].email == u.email)  {
+                    if(participants[i].email === u.email)  {
                         participants.splice(i, 1);
                         break;
                     }
                 }
+                setIsJoin(false)
             });
-            setIsJoin(false)
-        } catch (error) {
-            console.log(error)
-        }
+        }).catch((e) => {
+            alert(e.message);
+        });
     }
     return (
         // <Card style={{ width: '18rem' }}>

@@ -3,10 +3,14 @@ nav {
     font-weight: bold;
 }
 
-nav a:hover {
-    color: rgb(76, 112, 184) !important;
+.logo {
+    cursor: pointer;
 }
 
+.logo:hover {
+    color: rgb(76, 112, 184) !important;
+}
+ 
 .logout {
     position: relative;
     top: 10px;

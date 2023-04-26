@@ -18,9 +18,14 @@ const Header = (props) => {
     flag: -1,
   })
   
-  const handleClick = () => {
+  const moveToMain = () => {
+    movePage("/");
+  }
+
+  const logout = () => {
     firebase.logout();
-    movePage("/login");
+    sessionStorage.setItem("login flag",false);
+    window.location.href = "/login";
   }
 
   const handleChange = (val) => {
@@ -42,18 +47,22 @@ const Header = (props) => {
     <>
       <Navbar>
         <Container>
-          <Navbar.Brand href="/main">So Meet</Navbar.Brand>
-          <Navbar.Brand className={styles.logout} onClick={handleClick}>로그아웃</Navbar.Brand>
+          <Navbar.Brand className={styles.logo} onClick={moveToMain}>So Meet</Navbar.Brand>
+          {props.login_flag === "true" && <Navbar.Brand className={styles.logout} onClick={logout}>로그아웃</Navbar.Brand>}
         </Container>
       </Navbar>
 
-      <Container className={styles.header}>
-        <ToggleButtonGroup type="radio" name="type" className={styles.btn_group} onChange={handleChange} >
-          <ToggleButton id="1" value="식사" className={styles.btn_large} variant="primary">식사</ToggleButton>
-          <ToggleButton id="2" value="여가" className={styles.btn_large} variant="primary">여가</ToggleButton>
-        </ToggleButtonGroup>
-        <SmallCategory propFunction={props.propFunction} flag={category.flag} category={props.category} />
-      </Container>
+      {
+        props.login_flag === "true" && 
+          <Container className={styles.header}>
+            <ToggleButtonGroup type="radio" name="type" className={styles.btn_group} onChange={handleChange} >
+              <ToggleButton id="1" value="식사" className={styles.btn_large} variant="primary">식사</ToggleButton>
+              <ToggleButton id="2" value="여가" className={styles.btn_large} variant="primary">여가</ToggleButton>
+            </ToggleButtonGroup>
+            <SmallCategory propFunction={props.propFunction} flag={category.flag} category={props.category} />
+          </Container>
+        
+      }
     </>
     );
 }

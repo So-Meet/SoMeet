@@ -4,6 +4,7 @@ import Participant from '../../components/Participant';
 import { Link, useLocation } from 'react-router-dom';
 import styles from '../../css/pages/DetailPage.module.css';
 import {Card, Badge, Container,Button} from 'react-bootstrap';
+import FirebaseService from '../../services/firebase_service';
 
 //TODO 참여기능
 const DetailPage = (props) => {
@@ -13,15 +14,28 @@ const DetailPage = (props) => {
   const publisher = state.publisher;
   const participants = state.participants;
   const docId = state.docId;
+  const firebase = new FirebaseService();
+  const [isPub,setIsPub] = useState(false);
+  
+  const user = firebase.getUserInfo();
 
-  const [isPub,setIsPub] = useState(true);
-
+  user.then(u => {
+    if (u.email === publisher.email) {
+      setIsPub(true);
+    } else {
+      setIsPub(false);
+    }
+  });
   function toDateTime(secs) {
     var t = new Date(1970, 0, 1); // Epoch
     t.setSeconds(secs);
     return t;
   }
   
+  const deleteMeeting = () => {
+    firebase.deleteMeeting(docId).catch(e => alert(e.message));
+  }
+
   
   return (
     <Container className={styles.container}>
@@ -58,7 +72,7 @@ const DetailPage = (props) => {
         <div className={styles.buttonbox}>
         <Link to={'/'}><Button variant="outline-primary" className={styles.button}>목록으로</Button>{' '}</Link>
           {
-            isPub === true &&<Button variant="outline-danger" className={styles.button}>삭제하기</Button>
+            isPub === true &&<Button variant="outline-danger" className={styles.button} onClick={deleteMeeting}>삭제하기</Button>
           }
           
         </div>

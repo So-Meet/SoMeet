@@ -52,13 +52,12 @@ class FirebaseService {
                 "email": userCredential.user['email'],
                 "uid": userCredential.user['uid']
             };
-
             return user;
         }).catch((error) => {
-            // TODO: 여기는 어떻게 처리해야할지 고민...
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
+            throw new Error("로그인 정보가 잘못됬습니다.");
         });
 
         return user;
@@ -96,7 +95,7 @@ class FirebaseService {
 
             return userInfo.data();
         } else {
-            return null;
+            throw new Error("유저 정보가 존재하지 않습니다.");
         }
     }
 
@@ -105,7 +104,7 @@ class FirebaseService {
      */
     async logout() {
         signOut(this.auth).then(() => {
-
+            
         }).catch((error) => {
             console.log(error);
         });
@@ -164,7 +163,18 @@ class FirebaseService {
      * @param {string} docId 
      */
     async deleteMeeting(docId) {
-        await deleteDoc(doc(this.db, "meetings", docId));
+        const user = await this.getUserInfo();
+        
+        if (sessionStorage.getItem("login flag") === "true") {
+            // 게시자가 유저와 같은지 비교
+            const publisherSnapshot = await getDocs(collection(this.db, 'meetings', docId, 'publisher'));
+            const publisher = publisherSnapshot.docs.map(d => d.data())[0];
+            if (publisher.email === user.email) {
+                await deleteDoc(doc(this.db, "meetings", docId));
+            } else {
+                throw new Error("삭제 권한이 없습니다.");
+            }
+        }
     }
 
     /**
@@ -185,7 +195,7 @@ class FirebaseService {
     async createMeeting(meetingInfo) {
         const user = await this.getUserInfo();
         
-        if (user) {
+        if (sessionStorage.getItem("login flag") === "true") {
             try {
                 await runTransaction(this.db, async (transaction) => { 
                     // meetings id를 위한 meetingRef 생성
@@ -198,7 +208,6 @@ class FirebaseService {
                 console.log("Transaction failed: ", e);
             }
         } else {
-            // TODO: 로그인 안했을 때 처리 추가
             console.log("로그인 해주세요");
         }
     }
@@ -210,18 +219,18 @@ class FirebaseService {
     async joinMeeting(docId) {
         const user = await this.getUserInfo();
         
-        if (user) {
+        if (sessionStorage.getItem("login flag") === "true") {
             const participantsDoc = await getDocs(collection(this.db, "meetings", docId, "participants"));
             const participants = participantsDoc.docs.map(doc => doc.data());
             
             // email로 중복 참가 방지
             for (let i = 0; i < participants.length; i++) {
-                if (participants[i]['email'] === user['email']) return -1;
+                if (participants[i]['email'] === user['email']) throw new Error("이미 참가한 모임입니다.");
             }
             await addDoc(collection(this.db, `meetings/${docId}/participants`), user);
         } else {
-            // TODO: 로그인 안했을 때 처리 추가
             console.log("로그인 해주세요");
+            throw new Error("로그인 정보가 존재하지 않습니다.");
         }
     }
 
@@ -233,15 +242,19 @@ class FirebaseService {
     async leftMeeting(docId) {
         const user = await this.getUserInfo();
 
-        if (user) {
+        if (sessionStorage.getItem("login flag") === "true") {
             const q = query(collection(this.db, `meetings/${docId}/participants`), where("email", "==", user['email']));
             const participantsDoc = await getDocs(q);
             participantsDoc.docs.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
+                if (doc.data().email === user.email)  {
+                    await deleteDoc(doc.ref);
+                } else {
+                    throw new Error("접근 권한이 없습니다.");
+                }
             });
         } else {
-            // TODO: 로그인 안했을 때 처리 추가
             console.log("로그인을 해주세요");
+            throw new Error("로그인 정보가 존재하지 않습니다.");
         }
     }
 }

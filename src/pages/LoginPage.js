@@ -13,13 +13,15 @@ const LoginPage = () => {
 
     const login = (e)=>{
         e.preventDefault();
-        console.log("login success");
         
+        firebase.login(email,pwd).then(() => {
+            sessionStorage.setItem("login flag", true);
+            console.log("login success");
+            window.location.href = "/";
+        }).catch((error) => {
+            console.log(error);
+        })
 
-        firebase.login(email,pwd);
-
-        // eslint-disable-next-line no-restricted-globals
-        location.replace("/");
 
 
         //TODO 성공 실패 분기

@@ -14,7 +14,8 @@ const CardInfo = (props) => {
   function toDateTime(secs) {
     var t = new Date(1970, 0, 1); // Epoch
     t.setFullYear(1);
-    t.setSeconds(secs);
+    t.setMinutes(33);
+    t.setSeconds(secs-t.getTimezoneOffset()*60);
     return t;
   }
 

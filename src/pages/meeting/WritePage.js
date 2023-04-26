@@ -2,8 +2,15 @@ import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { Cascader } from 'antd';
 import "../../css/pages/WritePage.css"
-const WritePage = () => {
+import FirebaseService from '../../services/firebase_service';
+import { Timestamp } from 'firebase/firestore/lite';
 
+function getTimeStamp(time) {
+  return Timestamp.fromDate(new Date(time));
+}
+
+const WritePage = () => {
+    const firebase = new FirebaseService();
     const [info, setInfo] = useState({
         content: '',
         link: '',
@@ -28,12 +35,16 @@ const WritePage = () => {
           [name]: value
         }));
       }
-    
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(info);
-        // Info 데이터를 서버로 전송?
+      const handleTimeChange = (e) => {
+        const { name, value } = e.target;
+        setInfo(prevInfo => ({
+          ...prevInfo,
+          [name]: getTimeStamp(value)
+        }));
+        console.log(info.time);
+        
       }
+    
       const options = [
         {
           value: '식사',
@@ -46,6 +57,14 @@ const WritePage = () => {
           children: ['pc방', '노래방', '당구장', '영화'].map(tag => ({ value: tag.toLowerCase().replace(/\s/g, ''), label: tag })),
         },
       ];
+
+      const handleSubmit = async (e)=>{
+        e.preventDefault();
+        console.log(info);
+        await firebase.createMeeting(info);
+        console.log("미팅생성 성공");
+        window.location.href = "/";
+      }
     return (
 
     <div class="board-container">
@@ -67,7 +86,7 @@ const WritePage = () => {
               </div>
             </div>
             <div class="form-group">
-              <input type="datetime-local" id="time" name="time" class="form-control" onChange={handleChange} required/>
+              <input type="datetime-local" id="time" name="time" class="form-control" onChange={handleTimeChange} required/>
             </div>    
           </div>
           <div class="form-group">
@@ -75,18 +94,13 @@ const WritePage = () => {
           </div>
           <div class="form-buttons">
                 
-                <button class = "main-button"><Link className = "link-main" to ={'/main'}>목록</Link></button>
+                <button class = "main-button"><Link to ={'/main'}>목록</Link></button>
                 <button type="submit" class="submit-button">등록</button>
             </div>
         </form>
       </div>
     </div>
 
-
-
-//        <div>
-//            <h3>미팅 작성 페이지</h3>
-//        </div>
     );
 }
 export default WritePage;

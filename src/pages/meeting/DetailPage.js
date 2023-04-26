@@ -28,12 +28,14 @@ const DetailPage = (props) => {
   });
   function toDateTime(secs) {
     var t = new Date(1970, 0, 1); // Epoch
-    t.setSeconds(secs);
+    t.setSeconds(secs-t.getTimezoneOffset()*60);
+    
     return t;
   }
   
-  const deleteMeeting = () => {
-    firebase.deleteMeeting(docId).catch(e => alert(e.message));
+  const deleteMeeting = async () => {
+    await firebase.deleteMeeting(docId).catch(e => alert(e.message));
+    window.location.href = "/";
   }
 
   

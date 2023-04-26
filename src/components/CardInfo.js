@@ -36,10 +36,10 @@ const CardInfo = (props) => {
         <Card.Body>
           <Card.Title className={styles.card_title}>{meetingInfo.title}</Card.Title>
           <Card.Text className={styles.badges}>
-            <Badge bg="primary">
+            <Badge bg="primary" className={styles.badge}>
               {meetingInfo.type}
             </Badge>{' '}
-            <Badge bg="primary">
+            <Badge bg="" className={styles.badge}>
               {meetingInfo.tag}
             </Badge>{' '}
           </Card.Text>

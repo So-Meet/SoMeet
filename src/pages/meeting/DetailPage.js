@@ -43,10 +43,7 @@ const DetailPage = (props) => {
     <Container className={styles.container}>
       <div className = {styles.page}>
         <div className ={styles.infobox}>
-          <Badge bg="" className={styles.titlebadge}>제목</Badge>
           <Card className={styles.title}>{info.title}</Card>
-
-          <Badge bg="" className={styles.titlebadge}>내용</Badge>
           <Card className={styles.content}>{info.content}</Card>
 
           <div className ={styles.badgebox}>
@@ -62,22 +59,19 @@ const DetailPage = (props) => {
             <Badge bg="" className={styles.badge}>시간</Badge>
             <Card className={styles.badgetext}>{toDateTime(info.time.seconds).toLocaleString()}</Card>
 
-            <Badge bg="" className={`${styles.badge} ${styles.badge5}`}>오픈채팅</Badge>
-            <Card className={styles.badgetext_link} ><a className={styles.link} href={info.link}>링크</a></Card>
+            <Card className={styles.badgetext_link} ><a className={styles.link} href={info.link}>오픈채팅</a></Card>
+            <Link to={'/'}><Button variant="outline-primary" className={styles.button}>목록으로</Button>{' '}</Link>
+            {
+              isPub === true &&<Button variant="outline-danger" className={styles.button} onClick={deleteMeeting}>삭제하기</Button>
+            }
           </div>
         </div>
-          
-        <div className={styles.participant}>
-          <Participant participants={participants} docId={docId}/>
-          {/* <Participant/> */}
-        </div>
-        <div className={styles.buttonbox}>
-        <Link to={'/'}><Button variant="outline-primary" className={styles.button}>목록으로</Button>{' '}</Link>
-          {
-            isPub === true &&<Button variant="outline-danger" className={styles.button} onClick={deleteMeeting}>삭제하기</Button>
-          }
-          
-        </div>
+
+          <div className={styles.participant}>
+            <Participant participants={participants} docId={docId}/>
+            {/* <Participant/> */}
+          </div>
+
       </div>
     </Container>
   )

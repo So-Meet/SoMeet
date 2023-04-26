@@ -53,21 +53,24 @@ const Participant = (props) => {
         // <Card style={{ width: '18rem' }}>
       <Container className={styles.participants}>
         <Card className={styles.card}>
-            <Card.Header className={styles.cardheader}>참여자 리스트</Card.Header>
+            <Card.Header className={styles.cardheader}>참여자</Card.Header>
             <ListGroup variant="flush">
                 {participants.map(function(e){
                     return(
                         <ListGroup.Item key={e.email} className={styles.item}>{e.name}</ListGroup.Item>
                     );
                 })}
-                {
-                    isJoin === false
-                    ? <Button variant="" className={styles.button_join} onClick={join}>참여하기</Button>
-                    : <Button variant="" className={styles.button_cancel} onClick={left}>참여취소</Button>
-                }
+
             </ListGroup>
 
         </Card>
+        <div className={styles.button_box}>
+        {
+           isJoin === false
+            ? <Button variant="" className={styles.button_join} onClick={join}>참여하기</Button>
+            : <Button variant="" className={styles.button_cancel} onClick={left}>참여취소</Button>
+        }
+        </div>
       </Container>
     );
 }
